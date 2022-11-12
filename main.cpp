@@ -7,7 +7,8 @@
 
 int main()
 {
-    int rowsNum = 10;
+    int rowsNum = 15
+            ;
     std::fstream fout;
     srand (time(nullptr));
     fout.open("reference.csv", std::ios::out | std::ios::trunc);
@@ -53,7 +54,7 @@ int main()
     /// 593 - 770 альфа
     std::string passportNum, dateFrom, dateTo, voyage, placePrice, card, fromPlace, toPlace;
     std::string firstName, secondName, thirdName;
-    int cn;
+    int cn = 0;
     for (int i = 0; i < rowsNum; ++i) {
 
         ///create people
@@ -126,48 +127,53 @@ int main()
             s4 << carriage << "(" << casualClasses[rCasual].first << ")-" << place << "," << cost * casualClasses[rCasual].second * diff;
         }
         placePrice = s4.str();
-        cn ++;
+        if (cn == 0) {
+            ///cards with settings
+            double val = (double) rand() / RAND_MAX;
 
-        ///cards with settings
-        double val = (double)rand() / RAND_MAX;
+            int ran_pay;
+            if (val < 0.1) {           ///10%
+                ran_pay = 2;
+            } else if (val < 0.30) {   ///20%
+                ran_pay = 3;
+            } else if (val < 0.60) {   ///30%
+                ran_pay = 4;
+            } else if (val < 0.95) {   ///35%
+                ran_pay = 5;
+            } else {                   ///5%
+                ran_pay = 6;
+            }
 
-        int ran_pay;
-        if (val < 0.1) {           ///10%
-            ran_pay = 2;
-        } else if (val < 0.30) {   ///20%
-            ran_pay = 3;
-        } else if (val < 0.60) {   ///30%
-            ran_pay = 4;
-        } else if (val < 0.95) {   ///35%
-            ran_pay = 5;
-        } else {                   ///5%
-            ran_pay = 6;
+            int ind;
+            if (val < 0.4) {           ///40%
+                ind = 0;
+            } else if (val < 0.9) {    ///50%
+                ind = 1;
+            } else {                   ///10%
+                ind = 2;
+            }
+
+            int bankNum;
+            switch (ind) {
+                case 0:
+                    bankNum = rand() % 8;      ///сбер
+                    break;
+                case 1:
+                    bankNum = rand() % 9 + 8;  ///втб
+                    break;
+                case 2:
+                    bankNum = rand() % 7 + 17; ///альфа
+            }
+            ///ran_pay: 2 - МИP; 3 - American Express; 4 - VISA; 5 - MasterCard; 6 - Maestro
+            s5 << ran_pay << "04" << std::setw(2) << std::setfill('0') << rand() % 99 + 1 << std::setw(2)
+               << std::setfill('0') << rand() % 100 << banksNum[bankNum] << std::setw(6) << std::setfill('0')
+               << rand() % 1000000;
+            card = s5.str();
         }
-
-        int ind;
-        if (val < 0.4) {           ///40%
-            ind = 0;
-        } else if (val < 0.9) {    ///50%
-            ind = 1;
-        } else {                   ///10%
-            ind = 2;
+        cn++;
+        if (cn == 5) {
+            cn = 0;
         }
-
-        int bankNum;
-        switch (ind) {
-            case 0:
-                bankNum = rand() % 8;      ///сбер
-                break;
-            case 1:
-                bankNum = rand() % 9 + 8;  ///втб
-                break;
-            case 2:
-                bankNum = rand() % 7 + 17; ///альфа
-        }
-        ///ran_pay: 2 - МИP; 3 - American Express; 4 - VISA; 5 - MasterCard; 6 - Maestro
-        s5 << ran_pay << "04" << std::setw(2) << std::setfill('0') << rand() % 99 + 1 << std::setw(2) << std::setfill('0') << rand() % 100 << banksNum[bankNum] << std::setw(6) << std::setfill('0') << rand() % 1000000;
-        card = s5.str();
-
         fout << secondName << firstName << thirdName << "," << passportNum << "," << fromPlace << "," << toPlace << "," << dateFrom << "," << dateTo << "," << voyage << "," << placePrice << "," << card << "\n";
     }
     fout.close();
